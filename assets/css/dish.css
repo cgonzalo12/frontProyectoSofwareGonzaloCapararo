@@ -1,0 +1,23 @@
+body {
+  background-color: #faf7f2;
+}
+
+.dish-img {
+  max-width: 100%;
+  border-radius: 1rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.note-area {
+  resize: none;
+}
+
+.btn-custom {
+  background-color: #c96b4b;
+  color: #fff;
+  border: none;
+}
+
+.btn-custom:hover {
+  background-color: #a85535;
+}
