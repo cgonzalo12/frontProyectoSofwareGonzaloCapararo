@@ -28,28 +28,47 @@ async function loadDishes() {
       card.classList.add('col-md-4', 'col-lg-3');
 
       card.innerHTML = `
-        <div class="card h-100 shadow-sm">
-          <img src="${imgUrl}" class="card-img-top" alt="${dish.name}">
-          <div class="card-body d-flex flex-column">
-            <h5 class="card-title">${dish.name}</h5>
-            <p class="card-text text-muted mb-2 description-text">${dish.description || 'Sin descripción'}</p>
+      <div class="card h-100 shadow-sm border-0 rounded-4 overflow-hidden">
+        <img src="${imgUrl}" class="card-img-top" alt="${dish.name}" style="object-fit: cover; height: 180px;">
+        <div class="card-body d-flex flex-column">
+          <h5 class="card-title fw-bold text-dark">${dish.name}</h5>
+          <p class="card-text text-muted mb-3 description-text">
+            ${dish.description || 'Sin descripción disponible.'}
+          </p>
 
-            <div class="mt-auto">
-              <p><span class="badge bg-primary">${dish.category.name}</span></p>
-              <h6 class="text-success mb-2">$${dish.price.toFixed(2)}</h6>
-              ${
-                orderNumber
-                  ? `<button class="btn btn-success w-100" onclick='addToOrder(${JSON.stringify(dish)})'>
+          <div class="mt-auto">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <span class="badge bg-primary">${dish.category.name}</span>
+              <h6 class="text-success fw-semibold mb-0">$${dish.price.toFixed(2)}</h6>
+            </div>
+
+            ${
+              orderNumber
+                ? `
+                  <div class="bg-light p-2 rounded-3 border mb-3">
+                    <label for="qty-${dish.id}" class="form-label mb-1 small text-secondary">Cantidad</label>
+                    <input type="number" id="qty-${dish.id}" class="form-control form-control-sm mb-2" min="1" value="1">
+
+                    <label for="note-${dish.id}" class="form-label mb-1 small text-secondary">Notas (opcional)</label>
+                    <textarea id="note-${dish.id}" class="form-control form-control-sm mb-2" rows="2" placeholder="Ej: sin sal, extra salsa..."></textarea>
+
+                    <button class="btn btn-success btn-sm w-100 fw-semibold"
+                            onclick='addToOrder(${JSON.stringify(dish)})'>
                       ➕ Agregar a orden #${orderNumber}
                     </button>
-`
-                  : ""
-              }
-              <a href="dish.html?id=${dish.id}" class="btn btn-primary mb-2">Ver detalle</a>
-            </div>
+                  </div>
+                `
+                : ""
+            }
+
+            <a href="dish.html?id=${dish.id}" class="btn btn-outline-primary w-100 fw-semibold">
+              🔍 Ver detalle
+            </a>
           </div>
         </div>
-      `;
+      </div>
+    `;
+
 
       container.appendChild(card);
     });
@@ -69,7 +88,7 @@ async function addToOrder(dish) {
   }
 
   const ORDER_API_GET = `https://localhost:7268/api/v1/order/${orderNumber}`;
-  const ORDER_API_PATCH = `https://localhost:7268/api/v1/order/${orderNumber}`;
+  const ORDER_API_PATCH = `https://localhost:7268/api/v1/order?id=${orderNumber}`;
 
   try {
     // 1️⃣ Obtener la orden actual
@@ -77,18 +96,27 @@ async function addToOrder(dish) {
     if (!resOrder.ok) throw new Error("No se pudo obtener la orden actual");
     const order = await resOrder.json();
 
+    //notas
+    const noteInput = document.getElementById(`note-${dish.id}`);
+    const note = noteInput ? noteInput.value.trim() : "";
+
+    //cantidad
+    const qtyInput = document.getElementById(`qty-${dish.id}`);
+    let quantity = qtyInput ? parseInt(qtyInput.value, 10) : NaN;
+    if (isNaN(quantity) || quantity < 1) quantity = 1;
+
     // 2️⃣ Crear lista actualizada de items
     const updatedItems = [...order.items];
 
     // 3️⃣ Verificar si ya existe el plato
     const existingItem = updatedItems.find(i => i.dish.id === dish.id);
     if (existingItem) {
-      existingItem.quantity += 1;
+      existingItem.quantity = (existingItem.quantity || 0) + quantity;
     } else {
       updatedItems.push({
         dish: { id: dish.id }, // importante: enviar objeto con id
-        quantity: 1,
-        notes: ""
+        quantity: quantity,
+        notes: note
       });
     }
 
@@ -111,10 +139,10 @@ async function addToOrder(dish) {
     if (!updateRes.ok) throw new Error("Error al actualizar la orden");
 
     // 6️⃣ Mostrar notificación
-    showToast(`Se agregó "${dish.name}" a la orden #${orderNumber}`);
+    //showToast(`Se agregó "${dish.name}" a la orden #${orderNumber}`);
 
     // 7️⃣ Opcional: redirigir a la página de la orden
-    // window.location.href = `/pages/order.html?orderNumber=${orderNumber}`;
+    window.location.href = `/pages/order.html?orderNumber=${orderNumber}`;
   } catch (err) {
     console.error(err);
     alert("Hubo un problema al agregar el plato a la orden.");
