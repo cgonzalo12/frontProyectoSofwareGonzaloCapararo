@@ -15,18 +15,13 @@
     <link rel="stylesheet" href="../assets/css/style.css" />
   </head>
   <body class="bg-light">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
-      <div class="container">
-        <a class="navbar-brand" href="../index.html">🍽️ Restaurante</a>
-      </div>
-    </nav>
     <header>
       <h1 class="title text-center my-3">Restaurant</h1>
 
       <!-- ===== Barra de navegación ===== -->
       <nav class="navbar navbar-expand-lg bg-body-tertiary">
         <div class="container-fluid">
-          <a class="navbar-brand" href="../index.html">Home</a>
+          <a class="navbar-brand" href="/index.html">Home</a>
           <button
             class="navbar-toggler"
             type="button"
@@ -41,38 +36,15 @@
           <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
               <li class="nav-item">
-                <a
-                  class="nav-link active"
-                  aria-current="page"
-                  href="/pages/dishes.html"
-                  >Platos</a
-                >
+                <a class="nav-link active" href="/pages/dishes.html">Platos</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="/pages/orders.html">orders</a>
-              </li>
-              <li class="nav-item dropdown">
-                <a
-                  class="nav-link dropdown-toggle"
-                  href="#"
-                  role="button"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
-                >
-                  Dropdown
-                </a>
-                <ul class="dropdown-menu">
-                  <li><a class="dropdown-item" href="#">Action</a></li>
-                  <li><a class="dropdown-item" href="#">Another action</a></li>
-                  <li><hr class="dropdown-divider" /></li>
-                  <li>
-                    <a class="dropdown-item" href="#">Something else here</a>
-                  </li>
-                </ul>
+                <a class="nav-link" href="/pages/orders.html">Órdenes</a>
               </li>
             </ul>
-            <form class="d-flex" role="search">
+            <form id="searchForm" class="d-flex" role="search">
               <input
+                id="searchInput"
                 class="form-control me-2"
                 type="search"
                 placeholder="Buscar"
@@ -87,15 +59,86 @@
       </nav>
     </header>
 
-    <div class="container">
-      <h1 class="text-center mb-4">Menú de Platos</h1>
+    <!-- ===== Contenido principal ===== -->
+    <div class="container-fluid my-4">
+      <div class="row">
+        <!-- ===== Sidebar de categorías ===== -->
+        <aside class="col-md-3 col-lg-2 mb-4">
+          <div class="card shadow-sm">
+            <div class="card-header bg-dark text-white">
+              <h5 class="mb-0">Categorías</h5>
+            </div>
+            <ul class="list-group list-group-flush" id="categoryList">
+              <li class="list-group-item">
+                <button class="btn btn-link category-btn" data-id="">
+                  Todos
+                </button>
+              </li>
+              <li class="list-group-item">
+                <button class="btn btn-link category-btn" data-id="1">
+                  Entradas
+                </button>
+              </li>
+              <li class="list-group-item">
+                <button class="btn btn-link category-btn" data-id="2">
+                  Ensaladas
+                </button>
+              </li>
+              <li class="list-group-item">
+                <button class="btn btn-link category-btn" data-id="3">
+                  Minutas
+                </button>
+              </li>
+              <li class="list-group-item">
+                <button class="btn btn-link category-btn" data-id="4">
+                  Pastas
+                </button>
+              </li>
+              <li class="list-group-item">
+                <button class="btn btn-link category-btn" data-id="5">
+                  Parrilla
+                </button>
+              </li>
+              <li class="list-group-item">
+                <button class="btn btn-link category-btn" data-id="6">
+                  Pizzas
+                </button>
+              </li>
+              <li class="list-group-item">
+                <button class="btn btn-link category-btn" data-id="7">
+                  Sandwiches
+                </button>
+              </li>
+              <li class="list-group-item">
+                <button class="btn btn-link category-btn" data-id="8">
+                  Bebidas
+                </button>
+              </li>
+              <li class="list-group-item">
+                <button class="btn btn-link category-btn" data-id="9">
+                  Cerveza Artesanal
+                </button>
+              </li>
+              <li class="list-group-item">
+                <button class="btn btn-link category-btn" data-id="10">
+                  Postres
+                </button>
+              </li>
+            </ul>
+          </div>
+        </aside>
 
-      <div id="dishContainer" class="row g-4">
-        <!-- Las tarjetas se insertan dinámicamente aquí -->
+        <!-- ===== Contenedor de platos ===== -->
+        <main class="col-md-9 col-lg-10">
+          <h1 class="text-center mb-4">Menú de Platos</h1>
+          <div id="dishContainer" class="row g-4">
+            <!-- Las tarjetas se insertan dinámicamente aquí -->
+          </div>
+        </main>
       </div>
     </div>
 
-    <!-- Bootstrap Toasts -->
+    <!-- ===== Bootstrap Toasts ===== -->
     <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 9999">
       <div id="toastContainer"></div>
     </div>
