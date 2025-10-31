@@ -30,7 +30,9 @@ document.addEventListener("DOMContentLoaded", () => {
   // Escuchar cambios en el switch de "Ordenar por precio"
   sortByPriceCheckbox.addEventListener("change", () => {
     sortDirection = sortByPriceCheckbox.checked ? "asc" : "desc";
-    sortLabel.textContent = sortByPriceCheckbox.checked ? "Precio ↑" : "Precio ↓";
+    sortLabel.textContent = sortByPriceCheckbox.checked
+      ? "Precio ↑"
+      : "Precio ↓";
     loadDishes(showOnlyActive, sortDirection);
   });
 });
@@ -54,37 +56,59 @@ async function loadDishes(showOnlyActive = true, sortDirection = "asc") {
     container.innerHTML = "";
 
     dishes.forEach((dish) => {
-      // Filtrar solo activos si está activado el check
-      if (showOnlyActive && !dish.isActive) return;
+  if (showOnlyActive && !dish.isActive) return;
 
-      const imgUrl =
-        dish.image === "string" ? "../assets/img/no-image.png" : dish.image;
+  const imgUrl =
+    dish.image === "string" ? "../assets/img/no-image.png" : dish.image;
 
-      const card = document.createElement("div");
-      card.classList.add("col-md-4", "col-lg-3");
+  const card = document.createElement("div");
+  card.classList.add("col-md-4", "col-lg-3");
 
-      card.innerHTML = `
-        <div class="card h-100 shadow-sm border-0 rounded-4 overflow-hidden">
-          <img src="${imgUrl}" class="card-img-top" alt="${dish.name}" style="object-fit: cover; height: 180px;">
-          <div class="card-body d-flex flex-column">
-            <h5 class="card-title fw-bold text-dark">${dish.name}</h5>
-            <p class="card-text text-muted mb-3 description-text">
-              ${dish.description || "Sin descripción disponible."}
-            </p>
-            <div class="mt-auto">
-              <div class="d-flex justify-content-between align-items-center mb-2">
-                <span class="badge bg-primary">${dish.category.name}</span>
-                <h6 class="text-success fw-semibold mb-0">$${dish.price.toFixed(2)}</h6>
-              </div>
-              <a href="dish.html?id=${dish.id}" class="btn btn-outline-primary w-100 fw-semibold">
-                🔍 Ver detalle
-              </a>
-            </div>
+  // Detectar si hay un orderNumber en la URL
+  const paramsUrl = new URLSearchParams(window.location.search);
+  const hasOrder = paramsUrl.has("orderNumber");
+
+  card.innerHTML = `
+    <div class="card h-100 shadow-sm border-0 rounded-4 overflow-hidden">
+      <img src="${imgUrl}" class="card-img-top" alt="${dish.name}" style="object-fit: cover; height: 180px;">
+      <div class="card-body d-flex flex-column">
+        <h5 class="card-title fw-bold text-dark">${dish.name}</h5>
+        <p class="card-text text-muted mb-3 description-text">
+          ${dish.description || "Sin descripción disponible."}
+        </p>
+        <div class="mt-auto">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="badge bg-primary">${dish.category.name}</span>
+            <h6 class="text-success fw-semibold mb-0">$${dish.price.toFixed(2)}</h6>
           </div>
+
+          ${
+            hasOrder
+              ? `
+                <div class="input-group mb-2">
+                  <input type="number" id="qty-${dish.id}" class="form-control" min="1" value="1" style="max-width: 80px;">
+                  <input type="text" id="note-${dish.id}" class="form-control" placeholder="Nota (opcional)">
+                </div>
+                <button class="btn btn-success w-100 fw-semibold" onclick='addToOrder(${JSON.stringify(
+                  dish
+                )})'>
+                  🛒 Agregar a la orden
+                </button>
+              `
+              : `
+                <a href="dish.html?id=${dish.id}" class="btn btn-outline-primary w-100 fw-semibold">
+                  🔍 Ver detalle
+                </a>
+              `
+          }
         </div>
-      `;
-      container.appendChild(card);
-    });
+      </div>
+    </div>
+  `;
+
+  container.appendChild(card);
+});
+
 
     if (container.innerHTML === "") {
       container.innerHTML = `<div class="alert alert-warning text-center">No hay platos disponibles para mostrar.</div>`;
