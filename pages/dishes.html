@@ -41,6 +41,9 @@
               <li class="nav-item">
                 <a class="nav-link" href="/pages/orders.html">Órdenes</a>
               </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/pages/CreateDish.html">CrearDish</a>
+              </li>
             </ul>
             <form id="searchForm" class="d-flex" role="search">
               <input
@@ -62,12 +65,41 @@
     <!-- ===== Contenido principal ===== -->
     <div class="container-fluid my-4">
       <div class="row">
+        <!-- ===== Sidebar de activo y orden ===== -->
+        <aside>
+          <div class="p-3 border-bottom d-flex gap-4 align-items-center">
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                id="activeOnly"
+                checked
+              />
+              <label class="form-check-label" for="activeOnly">
+                Solo activos
+              </label>
+            </div>
+
+            <div class="form-check form-switch">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                id="sortByPrice"
+                checked
+              />
+              <label class="form-check-label" for="sortByPrice">
+                Precio ↑
+              </label>
+            </div>
+          </div>
+        </aside>
         <!-- ===== Sidebar de categorías ===== -->
         <aside class="col-md-3 col-lg-2 mb-4">
           <div class="card shadow-sm">
             <div class="card-header bg-dark text-white">
               <h5 class="mb-0">Categorías</h5>
             </div>
+
             <ul class="list-group list-group-flush" id="categoryList">
               <li class="list-group-item">
                 <button class="btn btn-link category-btn" data-id="">
