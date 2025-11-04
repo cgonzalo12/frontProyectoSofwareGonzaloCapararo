@@ -63,7 +63,7 @@ function renderOrderItems(order) {
           <div>
             <h5 class="card-title mb-1">${item.dish.name}</h5>
             ${item.notes ? `<p class="card-text mb-1"><em>Notas: ${item.notes}</em></p>` : ""}
-            <p class="card-text"><small class="text-muted">Estado actual: ${order.status.name}</small></p>
+            <p class="card-text"><small class="text-muted">Estado actual: ${item.status.name}</small></p>
           </div>
 
           <!-- Controles -->
