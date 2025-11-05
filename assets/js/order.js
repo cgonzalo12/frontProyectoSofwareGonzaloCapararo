@@ -105,7 +105,7 @@ function renderOrderItems(order) {
     document.getElementById("orderItems").appendChild(btn);
   }
 }
-// Función para llamar a la API y actualizar el estado
+
 // Función para llamar a la API y actualizar el estado
 async function updateItemStatus(orderId, itemId) {
   // Obtener el valor seleccionado del <select>

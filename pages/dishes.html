@@ -91,6 +91,11 @@
                 Precio ↑
               </label>
             </div>
+            <div>
+              <button class="btn btn-primary w-100 fw-semibold" onclick="openNewOrderModal()">
+              Crear nueva orden
+              </button>
+            </div>
           </div>
         </aside>
         <!-- ===== Sidebar de categorías ===== -->
@@ -162,9 +167,80 @@
 
         <!-- ===== Contenedor de platos ===== -->
         <main class="col-md-9 col-lg-10">
+          
           <h1 class="text-center mb-4">Menú de Platos</h1>
           <div id="dishContainer" class="row g-4">
             <!-- Las tarjetas se insertan dinámicamente aquí -->
+          </div>
+          <div
+            class="modal fade"
+            id="newOrderModal"
+            tabindex="-1"
+            aria-labelledby="newOrderModalLabel"
+            aria-hidden="true"
+          >
+            <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content rounded-4 border-0 shadow">
+                <div class="modal-header bg-primary text-white rounded-top-4">
+                  <h5 class="modal-title" id="newOrderModalLabel">
+                    Crear nueva orden
+                  </h5>
+                  <button
+                    type="button"
+                    class="btn-close btn-close-white"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                  ></button>
+                </div>
+                <div class="modal-body">
+                  <form id="newOrderForm" class="d-flex flex-column gap-3">
+                    <div>
+                      <label for="deliveryType" class="form-label fw-semibold"
+                        >Tipo de entrega</label
+                      >
+                      <select id="deliveryType" class="form-select" required>
+                        <option value="" disabled selected>
+                          Seleccionar...
+                        </option>
+                        <option value="1">Delivery</option>
+                        <option value="2">Take away</option>
+                        <option value="3">Dine in</option>
+                      </select>
+                    </div>
+
+                    <div id="deliveryAddressContainer" style="display: none">
+                      <label
+                        for="deliveryAddress"
+                        class="form-label fw-semibold"
+                        >Dirección de entrega</label
+                      >
+                      <input
+                        type="text"
+                        id="deliveryAddress"
+                        class="form-control"
+                        placeholder="Ej: Av. Siempreviva 742"
+                      />
+                    </div>
+
+                    <div>
+                      <label for="orderNotes" class="form-label fw-semibold"
+                        >Notas</label
+                      >
+                      <textarea
+                        id="orderNotes"
+                        class="form-control"
+                        placeholder="Notas opcionales..."
+                        rows="2"
+                      ></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-success fw-semibold">
+                       Crear orden
+                    </button>
+                  </form>
+                </div>
+              </div>
+            </div>
           </div>
         </main>
       </div>
@@ -174,7 +250,7 @@
     <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 9999">
       <div id="toastContainer"></div>
     </div>
-
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="../assets/js/dishes.js"></script>
   </body>
 </html>

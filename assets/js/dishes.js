@@ -25,6 +25,7 @@ document.addEventListener("DOMContentLoaded", () => {
   activeCheckbox.addEventListener("change", () => {
     showOnlyActive = activeCheckbox.checked;
     loadDishes(showOnlyActive, sortDirection);
+
   });
 
   // Escuchar cambios en el switch de "Ordenar por precio"
@@ -35,7 +36,29 @@ document.addEventListener("DOMContentLoaded", () => {
       : "Precio ↓";
     loadDishes(showOnlyActive, sortDirection);
   });
+
+  // === Modal de nueva orden ===
+  const form = document.getElementById("newOrderForm");
+  const deliveryTypeSelect = document.getElementById("deliveryType");
+  const addressContainer = document.getElementById("deliveryAddressContainer");
+
+  // Mostrar/ocultar dirección
+  deliveryTypeSelect.addEventListener("change", () => {
+    if (deliveryTypeSelect.value === "1") {
+      addressContainer.style.display = "block";
+    } else {
+      addressContainer.style.display = "none";
+    }
+  });
+
+  // Evento submit del formulario del modal
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    await createNewOrder();
+  });
 });
+
+
 
 async function loadDishes(showOnlyActive = true, sortDirection = "asc") {
   try {
@@ -69,42 +92,45 @@ async function loadDishes(showOnlyActive = true, sortDirection = "asc") {
   const hasOrder = paramsUrl.has("orderNumber");
 
   card.innerHTML = `
-    <div class="card h-100 shadow-sm border-0 rounded-4 overflow-hidden">
-      <img src="${imgUrl}" class="card-img-top" alt="${dish.name}" style="object-fit: cover; height: 180px;">
-      <div class="card-body d-flex flex-column">
-        <h5 class="card-title fw-bold text-dark">${dish.name}</h5>
-        <p class="card-text text-muted mb-3 description-text">
-          ${dish.description || "Sin descripción disponible."}
-        </p>
-        <div class="mt-auto">
-          <div class="d-flex justify-content-between align-items-center mb-2">
-            <span class="badge bg-primary">${dish.category.name}</span>
-            <h6 class="text-success fw-semibold mb-0">$${dish.price.toFixed(2)}</h6>
-          </div>
-
-          ${
-            hasOrder
-              ? `
-                <div class="input-group mb-2">
-                  <input type="number" id="qty-${dish.id}" class="form-control" min="1" value="1" style="max-width: 80px;">
-                  <input type="text" id="note-${dish.id}" class="form-control" placeholder="Nota (opcional)">
-                </div>
-                <button class="btn btn-success w-100 fw-semibold" onclick='addToOrder(${JSON.stringify(
-                  dish
-                )})'>
-                  🛒 Agregar a la orden
-                </button>
-              `
-              : `
-                <a href="dish.html?id=${dish.id}" class="btn btn-outline-primary w-100 fw-semibold">
-                  🔍 Ver detalle
-                </a>
-              `
-          }
+  <div class="card h-100 shadow-sm border-0 rounded-4 overflow-hidden">
+    <img src="${imgUrl}" class="card-img-top" alt="${dish.name}" style="object-fit: cover; height: 180px;">
+    <div class="card-body d-flex flex-column">
+      <h5 class="card-title fw-bold text-dark">${dish.name}</h5>
+      <p class="card-text text-muted mb-3 description-text">
+        ${dish.description || "Sin descripción disponible."}
+      </p>
+      <div class="mt-auto">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <span class="badge bg-primary">${dish.category.name}</span>
+          <h6 class="text-success fw-semibold mb-0">$${dish.price.toFixed(2)}</h6>
         </div>
+
+        ${
+          hasOrder
+            ? `
+              <div class="input-group mb-2">
+                <input type="number" id="qty-${dish.id}" class="form-control" min="1" value="1" style="max-width: 80px;">
+                <input type="text" id="note-${dish.id}" class="form-control" placeholder="Nota (opcional)">
+              </div>
+              <button class="btn btn-success w-100 fw-semibold" onclick='addToOrder(${JSON.stringify(
+                dish
+              )})'>
+                 Agregar a la orden
+              </button>
+            `
+            : `
+              <a href="dish.html?id=${dish.id}" class="btn btn-success w-100 fw-semibold mb-2">
+                 Ver detalle
+              </a>
+              
+            `
+
+        }
       </div>
     </div>
-  `;
+  </div>
+`;
+
 
   container.appendChild(card);
 });
@@ -227,10 +253,79 @@ async function addToOrder(dish) {
 
     window.location.href = `/pages/order.html?orderNumber=${orderNumber}`;
   } catch (err) {
-    console.error("❌ Error inesperado:", err);
-    alert(`❌ Error: ${err.message}`);
+    const container = document.getElementById("dishContainer");
+    container.innerHTML = `<div class="alert alert-danger">No se pudieron cargar los platos 😢</div>`;
   }
 }
+//modal
+function openNewOrderModal() {
+  const modal = new bootstrap.Modal(document.getElementById("newOrderModal"));
+  modal.show();
+}
+
+
+
+// === Crear nueva orden desde el modal ===
+async function createNewOrder() {
+  const deliveryType = document.getElementById("deliveryType").value;
+  const deliveryAddress = document.getElementById("deliveryAddress").value.trim();
+  const notes = document.getElementById("orderNotes").value.trim();
+
+  if (!deliveryType) {
+    showToast("Seleccioná un tipo de entrega.", "danger");
+    return;
+  }
+
+  if (deliveryType === "1" && deliveryAddress === "") {
+    showToast("Ingresá una dirección para Delivery.", "danger");
+    return;
+  }
+
+  const body = {
+    delivery: {
+      id: parseInt(deliveryType),
+      to: deliveryAddress || "N/A",
+    },
+    notes: notes || "",
+    items: [],
+  };
+
+  try {
+    const res = await fetch(ORDER_API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+
+    if (!res.ok) {
+      const errData = await res.json().catch(() => ({}));
+      throw new Error(errData.message || "Error al crear la orden.");
+    }
+
+    const newOrder = await res.json();
+    const orderNumber = newOrder.id || newOrder.orderNumber || newOrder.orderId;
+
+    if (!orderNumber) throw new Error("No se recibió el número de orden.");
+
+    sessionStorage.setItem("currentOrder", orderNumber);
+
+    // Cerrar el modal
+    const modalElement = document.getElementById("newOrderModal");
+    const modalInstance = bootstrap.Modal.getInstance(modalElement);
+    modalInstance.hide();
+
+    showToast("✅ Orden creada con éxito.", "success");
+
+    // Recargar platos con la orden activa
+    setTimeout(() => {
+      window.location.href = `/pages/dishes.html?orderNumber=${orderNumber}`;
+    }, 1000);
+  } catch (err) {
+    console.error("❌ Error al crear la orden:", err);
+    showToast(`❌ ${err.message}`, "danger");
+  }
+}
+
 
 // === Toasts ===
 function showToast(message, type = "success") {
