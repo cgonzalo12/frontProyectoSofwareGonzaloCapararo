@@ -39,31 +39,34 @@
                 <a class="nav-link active" href="/pages/orders.html">Órdenes</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="/pages/CreateDish.html">CrearDish</a>
+                <a class="nav-link" href="/pages/CreateDish.html">Crear Dish</a>
               </li>
             </ul>
-            
           </div>
         </div>
       </nav>
     </header>
+
     <main>
       <div class="container my-5">
         <h1 class="mb-4 text-center">Listado de Órdenes</h1>
 
-        <table class="table table-striped table-bordered">
+        <table class="table table-striped table-bordered align-middle">
           <thead class="table-dark">
             <tr>
               <th># Orden</th>
               <th>Total</th>
               <th>Entrega a</th>
+              <th>Notas</th>
               <th>Estado</th>
               <th>Tipo</th>
+              <th>Fecha</th>
+              <th>Ver</th>
               <th>Items</th>
             </tr>
           </thead>
           <tbody id="ordersTableBody">
-            <!-- Aquí se llenan las órdenes con JS -->
+            <!-- Se llena con JS -->
           </tbody>
         </table>
       </div>
@@ -73,13 +76,13 @@
       <p>&copy; 2025 Restaurant. Todos los derechos reservados.</p>
     </footer>
 
-    <!-- ===== Bootstrap JS (con Popper incluido) ===== -->
+    <!-- Bootstrap JS -->
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-      integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
       crossorigin="anonymous"
     ></script>
-
     <script src="/assets/js/orders.js"></script>
+    
   </body>
 </html>
+
